@@ -39,7 +39,7 @@ server.post("/api/add-todo", (req, res, next) => {
     isDone: false,
   };
   TODOS.push(todo);
-  res.send(201);
+  res.send(200, todo);
   return next();
 });
 
