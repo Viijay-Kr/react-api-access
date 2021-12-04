@@ -1,5 +1,6 @@
 import restify from "restify";
-import cors from "cors";
+import corsMiddleware from "restify-cors-middleware";
+
 interface TODO {
   id: string;
   name: string;
@@ -13,39 +14,50 @@ server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.gzipResponse());
 // use restify cors plugin
-server.use(cors());
+const cors = corsMiddleware({
+  preflightMaxAge: 5, //Optional
+  origins: ["http://localhost:3000"],
+
+  allowHeaders: ["API-Token"],
+  exposeHeaders: ["API-Token-Expiry"],
+});
+
+server.pre(cors.preflight);
+server.use(cors.actual);
 
 // Create a get todos route
-server.get("/todos", (req, res, next) => {
+server.get("/api/todos", (req, res, next) => {
   res.send(200, TODOS);
   return next();
 });
 
 // create a add todo route
-server.post("/add-todo", (req, res, next) => {
-  const todo: TODO = req.body;
-  todo.id = Math.random().toString();
+server.post("/api/add-todo", (req, res, next) => {
+  const todo: TODO = {
+    ...req.body,
+    id: String(Math.random()),
+    isDone: false,
+  };
   TODOS.push(todo);
   res.send(201);
   return next();
 });
 
 // create a delete todo route
-server.del("/delete-todo/:id", (req, res, next) => {
+server.del("/api/delete-todo/:id", (req, res, next) => {
   const id = req.params.id;
   const index = TODOS.findIndex((todo) => todo.id === id);
-  TODOS.splice(index, 1);
-  res.send(200);
+  res.send(200, TODOS.splice(index, 1));
   return next();
 });
 
 // create a update todo route
-server.put("/update-todo/:id", (req, res, next) => {
+server.put("/api/update-todo/:id", (req, res, next) => {
   const id = req.params.id;
   const isDone = req.body.isDone;
   const index = TODOS.findIndex((todo) => todo.id === id);
   TODOS[index].isDone = isDone;
-  res.send(200);
+  res.send(200, TODOS[index]);
   return next();
 });
 

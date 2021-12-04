@@ -4,14 +4,16 @@
   "license": "MIT",
   "devDependencies": {
     "@types/cors": "^2.8.12",
-    "@types/restify": "^8.5.4"
+    "@types/restify": "^8.5.4",
+    "@types/restify-cors-middleware": "^1.0.2"
   },
   "scripts": {
-    "start": "ts-node server.ts"
+    "start": "ts-node  server.ts -watch"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "restify": "^8.6.0",
+    "restify-cors-middleware": "^1.1.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2"
   }
